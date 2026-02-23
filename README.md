@@ -1,15 +1,8 @@
-# fp-adder32-verilog
-Implements a 32-bit floating-point adder based on the IEEE 754 standards, in Verilog HDL
+# Floating-Point Adder and Subtractor
+A project implementing variable length floating-point arithmetic units, specifically for addition and subtraction, in accordance with the IEEE 754 floating-point standards.
+## Overview
 
-## Commands
-```bash
-# Comparator testbench
-iverilog -o comp8_tb.vvp tb/comp8_tb.v src/add8.v src/comp8.v
-vvp comp8_tb.vvp
-gtkwave comp8_tb.vcd
+## Contents
 
-# Complete adder testbench
-iverilog -o fadd32_tb.vvp tb/fadd32_tb.v src/*.v
-vvp fadd32_tb.vvp
-gtkwave fadd32_tb.vcd
-```
+## Documentation
+Refer to [this page](/docs/README.md) for detailed documentation regarding implementation details, architecture, testbenches and analyses.
