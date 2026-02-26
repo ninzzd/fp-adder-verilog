@@ -1,3 +1,4 @@
+// Exponent comparator
 module e_comparator
 #( parameter le = 8)
 (
