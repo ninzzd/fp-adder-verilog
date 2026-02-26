@@ -1,6 +1,7 @@
 # Floating-Point Adder and Subtractor
-A project implementing variable length floating-point arithmetic units, specifically for addition and subtraction, in accordance with the IEEE 754 floating-point standards.
-## Overview
+A project implementing variable-precision floating-point arithmetic units, specifically for addition and subtraction, in accordance with the IEEE 754 floating-point standards.
+## Micro-Architecture
+![Microarchtiectural Diagram](/docs/microarch_diag.jpg)
 
 ## Contents
 
