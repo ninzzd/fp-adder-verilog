@@ -1,6 +1,6 @@
 /*
 To run:
-iverilog -o add_tb.vvp tb/add_tb.v src/utils/add.v
+iverilog -o add_tb.vvp tb/utils_tb/add_tb.v src/utils/add.v
 vvp add_tb.vvp
 */
 `timescale 1ns / 1ps

@@ -1,6 +1,4 @@
-/*
-W-bit CLA adder
-*/
+// W-bit CLA adder
 module add #(
     parameter W = 8
 )(
