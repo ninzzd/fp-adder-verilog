@@ -1,11 +1,10 @@
-module minmax
+module min
 #(
     parameter W = 32
 )
 (
     input [W-1:0] a,
     input [W-1:0] b,
-    input mode,
     output [W-1:0] out
 );
     genvar k;
@@ -20,7 +19,6 @@ module minmax
     assign bcmp = ~b;
     assign p = a | bcmp;
     assign g = a & bcmp;
-    assign sel = cout ^ mode;
     generate
         for(k = 0; k <= W-1; k = k + 1) begin: group_gen
             wire gp_red; // reduction AND of p terms in each group term
@@ -38,7 +36,7 @@ module minmax
         .W(W)
     ) minmax_mux (
         .in({b, a}),
-        .sel(sel),
+        .sel(cout),
         .out(out)
     );
 
