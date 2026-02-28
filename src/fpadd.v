@@ -68,7 +68,7 @@ module fpadd #(
         .m_shamt(b0_shamt)
     );
 
-    m_shifter #(
+    lm_r_shifter #(
         .le(le),
         .lm(lm)
     ) 
