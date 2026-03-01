@@ -1,16 +1,16 @@
 /*
 To run:
-iverilog -o m_shifter_tb.vvp tb/datapath_tb/m_shifter_tb.v src/datapath/m_shifter.v src/utils/*.v
-vvp m_shifter_tb.vvp
+iverilog -o lm_r_shifter_tb.vvp tb/datapath_tb/lm_r_shifter_tb.v src/datapath/lm_r_shifter.v src/utils/*.v
+vvp lm_r_shifter_tb.vvp
 */
 `timescale 1ns / 1ps
-module m_shifter_tb;
+module lm_r_shifter_tb;
     parameter lm = 23, le = 8;
     reg [lm:0] in;
     reg [le-1:0] shamt;
     wire [lm+3:0] out;
 
-    m_shifter #(
+    lm_r_shifter #(
         .lm(lm),
         .le(le)
     )uut(
@@ -32,8 +32,8 @@ module m_shifter_tb;
 
     initial
     begin
-        $dumpfile("m_shifter_tb.vcd");
-        $dumpvars(0,m_shifter_tb);
+        $dumpfile("lm_r_shifter_tb.vcd");
+        $dumpvars(0,lm_r_shifter_tb);
 
         run_test_case(24'b000000000000000000000001,8'b00000011);
         run_test_case(24'b000000000000000000000010,8'b00000010);
