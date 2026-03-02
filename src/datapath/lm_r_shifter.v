@@ -1,4 +1,4 @@
-module m_shifter
+module lm_r_shifter
 #(
     parameter lm = 23, le = 8
 )

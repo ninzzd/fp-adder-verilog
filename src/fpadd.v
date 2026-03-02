@@ -14,6 +14,7 @@ module fpadd #(
     wire [lm:0] bm; // complete mantissa of b with leading bit after decimal point
 
     wire [lm:0] a0m;
+    wire [le-1:0] a0e;
     wire [lm:0] b0m;
     wire [lm+3:0] b0m_shifted;
     wire a0s;
@@ -25,6 +26,12 @@ module fpadd #(
     wire maddop;
     wire [lm+3:0] maddres;
     wire [lm+3:0] maddres_2s; // absolute value of maddres
+    wire [lm+3:0] maddres_ls;
+    wire [lm+3:0] maddres_rs;
+    wire [lm+3:0] resm_bround;
+    wire maddres_isZero;
+    wire [le-1:0] maddres_lshamt;
+    wire [le-1:0] a0e_lshamt_min;
     wire maddcout;
     wire flag;
     
@@ -65,7 +72,8 @@ module fpadd #(
         .a(a[le+lm-1:lm]),
         .b(b[le+lm-1:lm]),
         .a_ge_b(ageb),
-        .m_shamt(b0_shamt)
+        .m_shamt(b0_shamt),
+        .a0e(a0e)
     );
 
     lm_r_shifter #(
@@ -81,10 +89,10 @@ module fpadd #(
     add #(
         .W(lm+4)
     ) mantissa_adder (
-        .a(a0m),
+        .a({a0m,3'b000}),
         .b({(lm+4){maddop}} ^ b0m_shifted),
         .cin(maddop),
-        .out(maddres),
+        .s(maddres),
         .cout(maddcout)
     );
 
@@ -94,11 +102,63 @@ module fpadd #(
         .W(lm+4)
     ) mantissa_inc (
         .in({(lm+4){flag}} ^ maddres),
-        .out(maddres),
-        .cin(flag),
-        .cout(maddres_2s)
+        .out(maddres_2s),
+        .cin(flag)
     );
 
+    resm_p_encoder #(
+        .le(le),
+        .lm(lm)
+    ) resm_pe (
+        .resm(maddres_2s),
+        .isZero(maddres_isZero),
+        .shamt(maddres_lshamt)
+    );
+
+    min #(
+        .W(le)
+    ) a0e_lshamt_cap (
+        .a(a0e),
+        .b(maddres_lshamt),
+        .out(a0e_lshamt_min)
+    );
+
+    add #(
+        .W(le)
+    ) rese_sub (
+        .a(a0e),
+        .b(~a0e_lshamt_min),
+        .cin(1'b1),
+        .s(c[lm+le-1:lm]),
+        .cout()
+    );
+
+    resm_l_shifter #(
+        .le(le),
+        .lm(lm)
+    ) resm_ls (
+        .in(maddres_2s),
+        .shamt(a0e_lshamt_min),
+        .out(maddres_ls)
+    );
     assign c[lm+le] = a0s ^ flag; // sign of the result
+
+    mux #(
+        .W(lm+4),
+        .N(2)
+    ) add_resm_mux (
+        .in({{maddcout,maddres_2s[lm+3:1]},maddres_2s}),
+        .sel(maddcout),
+        .out(maddres_rs)
+    );
+
+    mux #(
+        .W(lm+4),
+        .N(2)
+    ) add_sub_resm_mux (
+        .in({maddres_ls,maddres_rs}),
+        .sel(maddop),
+        .out(resm_bround) // result mantissa before rounding
+    );
 
 endmodule

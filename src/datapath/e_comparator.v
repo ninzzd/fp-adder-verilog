@@ -5,7 +5,8 @@ module e_comparator
     input [le-1:0] a,
     input [le-1:0] b,
     output a_ge_b,
-    output [le-1:0] m_shamt
+    output [le-1:0] m_shamt,
+    output [le-1:0] a0e // the larger exponent
 );
     wire [le-1:0] t_shamt;
     add #(.W(le)) adder (
@@ -20,5 +21,13 @@ module e_comparator
         .in(t_shamt ^ {le{~a_ge_b}}), // if a >= b, pass a - b, else pass b - a
         .out(m_shamt),
         .cout()
+    );
+    mux #(
+        .W(le),
+        .N(2)
+    ) a0e_mux(
+        .in({a,b}),
+        .sel(a_ge_b),
+        .out(a0e)
     );
 endmodule
