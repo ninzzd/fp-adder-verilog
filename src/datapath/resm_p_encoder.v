@@ -2,7 +2,7 @@ module resm_p_encoder
 #(
     parameter le = 8, lm = 23
 )(
-    input [lm+3:0] mres,
+    input [lm+3:0] resm,
     output isZero,
     output [le-1:0] shamt
 );
@@ -19,13 +19,13 @@ module resm_p_encoder
                 assign f[i][j] = temp; // not real right shifting, precomputing priority functions
             end
             p_encoder #(.N(lm+4)) pe (
-                .in(mres),
+                .in(resm),
                 .f(f[i]),
                 .out(rev_shamt[i])
             );
         end
     endgenerate
-    assign isZero = ~|(mres); // reduction NOR of all bits
+    assign isZero = ~|(resm); // reduction NOR of all bits
     assign lm_ = lm[le-1:0]+{{(le-2){1'b0}},3'b11};
     add #(
         .W(le)
