@@ -19,9 +19,9 @@ module resm_p_encoder_tb;
     task test;
         input [lm+3:0] test_mres;
         begin
-            mres <= test_mres;
-            $display("mres = %b, isZero = %b, shamt = %b", mres, isZero, shamt);
+            mres = test_mres;
             #10;
+            $display("mres = %b, isZero = %b, shamt = %b", mres, isZero, shamt);
         end
     endtask
     integer i;
@@ -31,10 +31,11 @@ module resm_p_encoder_tb;
         for(i = 0;i < le;i = i+1)begin
             $dumpvars(0,resm_p_encoder_tb.uut.f[i]);
         end
-        test(27'b100000000000000000000000000);
-        test(27'b010000000000000000000000000);
+        test(27'b100010001000010100101100010);
+        test(27'b010000010001001001000000000);
         test(27'b001000100010000100000000100);
         test(27'b000101001000100010001001100);
+        test(27'b000000000000000000000000000);
     $finish;
     end
 endmodule

@@ -6,8 +6,9 @@ module resm_p_encoder
     output isZero,
     output [le-1:0] shamt
 );
-    assign isZero = ~|(mres); // reduction NOR of all bits
-    wire [lm+3:0] f [0:le-1]; // le-1 priority functions, each function having lm+4 outputs corresponding to each priority level 
+    wire [lm+3:0] f [0:le-1]; // le-1 priority functions, each function having lm+4 outputs corresponding to each priority level
+    wire [le-1:0] rev_shamt;
+    wire [le-1:0] lm_;
     genvar i;
     genvar j;
     generate
@@ -20,8 +21,19 @@ module resm_p_encoder
             p_encoder #(.N(lm+4)) pe (
                 .in(mres),
                 .f(f[i]),
-                .out(shamt[i])
+                .out(rev_shamt[i])
             );
         end
     endgenerate
+    assign isZero = ~|(mres); // reduction NOR of all bits
+    assign lm_ = lm[le-1:0]+{{(le-2){1'b0}},3'b11};
+    add #(
+        .W(le)
+    ) shamt_sub(
+        .a(lm_),
+        .b(~rev_shamt),
+        .cin(1'b1),
+        .cout(),
+        .s(shamt)
+    );
 endmodule

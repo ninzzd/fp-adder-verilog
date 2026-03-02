@@ -15,7 +15,7 @@ module p_encoder
             if(i == N)
                 assign t[i-1] = in[i-1] & f[i-1];
             else
-                assign t[i-1] = &(~in[N-1:i]) & in[i-1] & in[i-1];
+                assign t[i-1] = &(~in[N-1:i]) & in[i-1] & f[i-1];
         end
     endgenerate
     assign out = |t;

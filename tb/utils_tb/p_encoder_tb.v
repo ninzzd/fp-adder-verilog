@@ -4,7 +4,7 @@ iverilog -o p_encoder_tb.vvp tb/utils_tb/p_encoder_tb.v src/utils/p_encoder.v
 vvp p_encoder_tb.vvp
 */
 module p_encoder_tb;
-    parameter N = 2;
+    parameter N = 4;
     integer i;
     reg [N-1:0] in;
     wire [N-1:0] f;
@@ -12,12 +12,12 @@ module p_encoder_tb;
 
     p_encoder #(
         .N(N)
-    ) dut (
+    ) dut1 (
         .in(in),
         .f(f),
         .out(out)
     );
-    assign f = 2'b10;
+    assign f = 4'b0101;
     initial begin
         in = 0;
         #10;
