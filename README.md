@@ -3,7 +3,31 @@ A project implementing variable-precision floating-point arithmetic units, speci
 ## Micro-Architecture
 ![Microarchtiectural Diagram](/docs/microarch_diag.jpg)
 
-## Contents
+## Hierarchy
+
+A quick overview of the directory hierarchy and the purpose of each file/folder:
+
+```text
+├── src/                # Source files (.v)
+│   ├── datapath/       # Specific to this project, build the datapath
+│   ├── utils/          # Modules for general circuits (add, mux, inc, etc.)
+│   └── fpadd.v         # Main module source file (.v)
+├── tb/                 # Test-bench files (.v)
+│   ├── datapath_tb/    # Test-benches for datapath-specific modules
+│   ├── utils_tb/       # Test-benches for general modules
+│   └── fpadd.v         # Main test-bench file (.v)
+├── docs/               # Technical documentation and diagrams
+└── README.md           # You are here
+```
 
 ## Documentation
 Refer to [this page](/docs/README.md) for detailed documentation regarding implementation details, architecture, testbenches and analyses.
+
+## RoadMap
+- [ ] Handles additions/subtractions of normalized numbers.
+- [ ] Accounts for sub-normal numbers.
+- [ ] Handles +0, -0
+- [ ] Handles $+\infin$, $-\infin$
+- [ ] Handles NaN propagation
+- [ ] Extensive testing with SoftFloat
+- [ ] Testing on FPGA hardware and benchmarking

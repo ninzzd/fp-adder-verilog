@@ -29,11 +29,13 @@ module fpadd #(
     wire [lm+3:0] maddres_ls;
     wire [lm+3:0] maddres_rs;
     wire [lm+3:0] resm_bround;
+    wire [lm:0] resm_around;
     wire maddres_isZero;
     wire [le-1:0] maddres_lshamt;
     wire [le-1:0] a0e_lshamt_min;
     wire maddcout;
     wire flag;
+    wire round_cout;
     
 
     assign na = ~|(a[le+lm-1:lm]); // Reduction NOR
@@ -161,4 +163,11 @@ module fpadd #(
         .out(resm_bround) // result mantissa before rounding
     );
 
+    resm_round #(
+        .lm(lm)
+    ) rrr (
+        .resm_bround(resm_bround),
+        .resm(resm_around),
+        .inc_cout(round_cout)
+    );
 endmodule
