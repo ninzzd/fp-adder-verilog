@@ -146,7 +146,7 @@ module fpadd #(
     mux #(
         .W(lm+4),
         .N(2)
-    ) add_resm_mux (
+    ) add_resm_mux ( // Mux that handles the cases when mantissas are added (overflow or no overflow)
         .in({{maddcout,maddres_2s[lm+3:1]},maddres_2s}),
         .sel(maddcout),
         .out(maddres_rs)
