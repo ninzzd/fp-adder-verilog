@@ -30,4 +30,5 @@ Refer to [this page](/docs/README.md) for detailed documentation regarding imple
 - [ ] Handles $+\infin$, $-\infin$
 - [ ] Handles NaN propagation
 - [ ] Extensive testing with SoftFloat
+- [ ] Pipelining and multi-cycle design
 - [ ] Testing on FPGA hardware and benchmarking
