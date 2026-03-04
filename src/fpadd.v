@@ -30,9 +30,13 @@ module fpadd #(
     wire [lm+3:0] maddres_rs;
     wire [lm+3:0] resm_bround;
     wire [lm:0] resm_around;
+    wire [lm:0] resm;
     wire maddres_isZero;
     wire [le-1:0] maddres_lshamt;
     wire [le-1:0] a0e_lshamt_min;
+    wire [le-1:0] resesub;
+    wire [le-1:0] reseadd;
+    wire [le-1:0] rese_bround;
     wire maddcout;
     wire flag;
     wire round_cout;
@@ -131,8 +135,17 @@ module fpadd #(
         .a(a0e),
         .b(~a0e_lshamt_min),
         .cin(1'b1),
-        .s(c[lm+le-1:lm]),
-        .cout()
+        .s(resesub),        // Important: 0 handling
+        .cout()             // Important: 0 handling
+    );
+
+    inc #(
+        .W(le)
+    ) ince_add(
+        .in(a0e),
+        .cin(maddcout),
+        .out(reseadd),
+        .cout()             // Important: inf and NaN handling
     );
 
     resm_l_shifter #(
@@ -149,7 +162,7 @@ module fpadd #(
         .W(lm+4),
         .N(2)
     ) add_resm_mux ( // Mux that handles the cases when mantissas are added (overflow or no overflow)
-        .in({{maddcout,maddres_2s[lm+3:1]},maddres_2s}),
+        .in({{maddcout,maddres_2s[lm+3:2],maddres_2s[1]|maddres_2s[0]},maddres_2s}), // input line for 1: right-shift-by-1 with preserved sticky-ness (S_{new} = R | S)
         .sel(maddcout),
         .out(maddres_rs)
     );
@@ -170,4 +183,33 @@ module fpadd #(
         .resm(resm_around),
         .inc_cout(round_cout)
     );
+
+    mux #(
+        .W(lm+1),
+        .N(2)
+    ) round_resm_mux (
+        .in({{round_cout,resm_around[lm:2],resm_around[1]|resm_around[0]},resm_around}),
+        .sel(round_cout),
+        .out(resm)
+    );
+    assign c[lm-1:0] = resm[lm-1:0]; // Result mantissa finally obtained
+
+    mux #(
+        .W(le),
+        .N(2)
+    ) add_sub_rese_mux (
+        .in({resesub,reseadd}),
+        .sel(maddop),
+        .out(rese_bround)
+    );
+
+    inc #(
+        .W(le)
+    ) ince_round (
+        .in(rese_bround),
+        .cin(round_cout),
+        .out(c[lm+le-1:lm]),
+        .cout()
+    );
+
 endmodule
