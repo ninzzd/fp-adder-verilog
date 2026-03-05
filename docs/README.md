@@ -3,8 +3,9 @@ A major drawback of fixed-point numbers is the lack of range, i.e fixed-point nu
 ```math
 A = M_A . 2^{E_A}
 ```
+Where $M_A$ is the mantissa and $E_A$ is the exponent. 
 ## Mantissa Normalization
-Where $M_A$ is the mantissa and $E_A$ is the exponent. Any given number can have **infinite** floating-point representations as $M_A$ can have any number of leading zeros after the first significant/set bit. The IEEE 754 standard fixes this issue by a process of **normalization**, where in $E_A$ is adjusted to let $M_A$ have a range of $[2^{E_A},2^{E_A+1})$, which is possible by setting the bit after the decimal-point to be 1, i.e. 
+Any given number can have **infinite** floating-point representations as $M_A$ can have any number of leading zeros after the decimal point, preceding the first significant/set bit. The IEEE 754 standard fixes this issue by a process of **normalization**, where in $E_A$ is adjusted to let $M_A$ have a range of $[2^{E_A},2^{E_A+1})$, which is possible by setting the bit after the decimal-point to be 1, i.e. 
 ```math
     M_A = 1.(x_{lm-1})(x_{lm-2})...(x_{0})
 ```

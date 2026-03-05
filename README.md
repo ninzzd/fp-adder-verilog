@@ -5,7 +5,7 @@ A project implementing variable-precision floating-point arithmetic units, speci
 
 ## Hierarchy
 
-A quick overview of the directory hierarchy and the purpose of each file/folder:
+A quick overview of the directory tree and the purpose of each file/folder:
 
 ```text
 ├── src/                # Source files (.v)
@@ -27,7 +27,7 @@ Refer to [this page](/docs/README.md) for detailed documentation regarding imple
 - [ ] Handles additions/subtractions of normalized numbers.
 - [ ] Accounts for sub-normal numbers.
 - [ ] Handles +0, -0
-- [ ] Handles $+\infin$, $-\infin$
+- [ ] Handles $+\infty$, $-\infty$
 - [ ] Handles NaN propagation
 - [ ] Extensive testing with SoftFloat
 - [ ] Pipelining and multi-cycle design
