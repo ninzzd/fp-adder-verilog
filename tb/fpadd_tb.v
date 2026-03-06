@@ -2,14 +2,22 @@
 To run:
 iverilog -o fpadd_tb.vvp tb/fpadd_tb.v src/*.v src/utils/*.v src/datapath/*.v
 vvp fpadd_tb.vvp
+gtkwave fpadd_tb.vcd
 */
 module fpadd_tb;
     parameter lm = 23, le = 8;
+    integer file;
+    integer n;
+    integer nflag;
+    integer vecflag;
+    integer i;
     reg [lm+le:0] a;
     reg [lm+le:0] b;
     reg op;
     reg [lm+le:0] exp_res;
     wire [lm+le:0] c;
+    wire err;
+
     fpadd #(
         .le(le),
         .lm(lm)
@@ -20,11 +28,8 @@ module fpadd_tb;
         .c(c)
     );
 
-    integer file;
-    integer n;
-    integer nflag;
-    integer vecflag;
-    integer i;
+    assign err = c != exp_res;
+    
     initial begin 
         $dumpfile("fpadd_tb.vcd");
         $dumpvars(0,fpadd_tb);
