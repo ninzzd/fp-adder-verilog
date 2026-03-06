@@ -48,7 +48,7 @@ module fpadd #(
     assign am = {na, a[lm-1:0]};
     assign bm = {nb, b[lm-1:0]};
 
-    assign maddop = a[lm+le+1] ^ b[lm+le+1] ^ op;
+    assign maddop = a[lm+le] ^ b[lm+le] ^ op;
 
     mux #(.W(lm+1), .N(2)) a0m_mux (
         .in({am,bm}),

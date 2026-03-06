@@ -8,6 +8,7 @@ module fpadd_tb;
     reg [lm+le:0] a;
     reg [lm+le:0] b;
     reg op;
+    reg [lm+le:0] exp_res;
     wire [lm+le:0] c;
     fpadd #(
         .le(le),
@@ -18,7 +19,24 @@ module fpadd_tb;
         .op(op),
         .c(c)
     );
+
+    integer file;
+    integer n;
+    integer nflag;
+    integer vecflag;
+    integer i;
     initial begin 
-        
+        $dumpfile("fpadd_tb.vcd");
+        $dumpvars(0,fpadd_tb);
+        file = $fopen("./test_vectors.hex","r");
+        nflag = $fscanf(file,"%d\n",n);
+        if(nflag == 1)
+        begin
+            for(i = 0;i < n;i = i+1)
+            begin: test_vector_loop
+                vecflag = $fscanf(file,"%h %h %1b %h",a,b,op,exp_res);
+                #10;
+            end
+        end
     end
 endmodule

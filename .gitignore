@@ -12,3 +12,6 @@
 
 # C compiled binaries
 *.out
+
+# Binary HEX files 
+*.hex

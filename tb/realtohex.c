@@ -1,9 +1,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 typedef union{
     float f;
-    uint32_t b;
+    uint32_t bin;
 } f2b;
 int main(){
     FILE *test;
@@ -11,8 +12,7 @@ int main(){
     f2b a, b, res;
     unsigned int mode;
     int n;
-    printf("Enter testfile path (.test): ");
-    scanf("%s",str);
+    strcpy(str,"test_vectors.hex");
     test = fopen(str,"w");
     if(test == NULL){
         printf("\nError in opening file.");
@@ -29,7 +29,7 @@ int main(){
         printf("\nMode: (0 => ADD, 1 => SUB): ");
         scanf("%u",&mode);
         res.f = mode ? a.f - b.f : a.f + b.f;
-        fprintf(test,"%08x %08x %u %08x\n",a.b,b.b,mode,res.b);
+        fprintf(test,"%08x %08x %u %08x\n",a.bin,b.bin,mode,res.bin);
     }
     fclose(test);
     return 0;
