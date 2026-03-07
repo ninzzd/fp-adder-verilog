@@ -7,8 +7,8 @@ module fpadd #(
     input op,
     output [le+lm:0] c
 );
-    wire na; // is 'a' normalized
-    wire nb; // is 'b' normalized
+    wire na; // is 'a' normal
+    wire nb; // is 'b' normal
 
     wire [lm:0] am; // complete mantissa of a with leading bit after decimal point
     wire [lm:0] bm; // complete mantissa of b with leading bit after decimal point
@@ -42,8 +42,8 @@ module fpadd #(
     wire round_cout;
     
 
-    assign na = ~|(a[le+lm-1:lm]); // Reduction NOR
-    assign nb = ~|(b[le+lm-1:lm]); 
+    assign na = |(a[le+lm-1:lm]); // Reduction OR -> 0 iff all bits are 0 : Case of subnormal numbers ->  1 otherwise : Normal numbers (with NaN and inf being exceptions)
+    assign nb = |(b[le+lm-1:lm]); 
 
     assign am = {na, a[lm-1:0]};
     assign bm = {nb, b[lm-1:0]};
@@ -198,7 +198,7 @@ module fpadd #(
         .W(le),
         .N(2)
     ) add_sub_rese_mux (
-        .in({resesub,reseadd}),
+        .in({resesub&{le{~maddres_isZero}},reseadd}), // Override exponent subtractor result to 0 if result mantissa is 0
         .sel(maddop),
         .out(rese_bround)
     );
