@@ -17,6 +17,8 @@ A quick overview of the directory tree and the purpose of each file/folder:
 │   ├── utils_tb/       # Test-benches for general modules
 │   └── fpadd.v         # Main test-bench file (.v)
 ├── docs/               # Technical documentation and diagrams
+│   ├── README.md       # Documentation
+│   └── logs/           # Waveform images and logs of test runs
 └── README.md           # You are here
 ```
 
@@ -24,7 +26,7 @@ A quick overview of the directory tree and the purpose of each file/folder:
 Refer to [this page](/docs/README.md) for detailed documentation regarding implementation details, architecture, testbenches and analyses.
 
 ## RoadMap
-- [ ] Handles additions/subtractions of normalized numbers.
+- [x] Handles additions/subtractions of normalized numbers.
 - [ ] Accounts for sub-normal numbers.
 - [ ] Handles +0, -0
 - [ ] Handles $+\infty$, $-\infty$
