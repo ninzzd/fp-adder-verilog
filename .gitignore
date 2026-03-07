@@ -15,3 +15,6 @@
 
 # Binary HEX files 
 *.hex
+
+# Test CSV files
+*.csv

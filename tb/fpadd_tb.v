@@ -11,10 +11,10 @@ module fpadd_tb;
     integer nflag;
     integer vecflag;
     integer i;
-    reg [lm+le:0] a;
-    reg [lm+le:0] b;
-    reg op;
-    reg [lm+le:0] exp_res;
+    reg  [lm+le:0] a;
+    reg  [lm+le:0] b;
+    reg            op;
+    reg  [lm+le:0] exp_res;
     wire [lm+le:0] c;
     wire err;
 
@@ -28,20 +28,41 @@ module fpadd_tb;
         .c(c)
     );
 
-    assign err = c != exp_res;
-    
-    initial begin 
+    assign err = (c != exp_res);
+
+    initial begin
         $dumpfile("fpadd_tb.vcd");
-        $dumpvars(0,fpadd_tb);
-        file = $fopen("./test_vectors.hex","r");
-        nflag = $fscanf(file,"%d\n",n);
-        if(nflag == 1)
-        begin
-            for(i = 0;i < n;i = i+1)
-            begin: test_vector_loop
-                vecflag = $fscanf(file,"%h %h %1b %h",a,b,op,exp_res);
-                #10;
+        $dumpvars(0, fpadd_tb);
+        file = $fopen("./test_vectors.csv","r");
+        if(file == 0) begin
+            $display("Error opening file");
+            $finish;
+        end
+        // read number of test vectors
+        nflag = $fscanf(file,"%d\n", n);
+        if(nflag != 1) begin
+            $display("Failed to read test vector count");
+            $finish;
+        end
+        $display("Running %0d test vectors", n);
+        for(i = 0; i < n; i = i + 1) begin
+            vecflag = $fscanf(file,"%h,%h,%d,%h\n", a, b, op, exp_res);
+            if(vecflag != 4) begin
+                $display("Error reading vector %0d", i);
+                $finish;
+            end
+            #10;
+            if(err) begin
+                $display("FAIL: a=%h b=%h op=%0d expected=%h got=%h",
+                        a, b, op, exp_res, c);
+            end
+            else begin
+                $display("PASS: a=%h b=%h op=%0d result=%h",
+                        a, b, op, c);
             end
         end
+        $display("Simulation complete");
+        $fclose(file);
+        $finish;
     end
 endmodule
