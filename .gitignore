@@ -16,5 +16,5 @@
 # Binary HEX files 
 *.hex
 
-# Test CSV files
-*.csv
+# Current CSV test file
+test_vectors.csv

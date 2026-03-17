@@ -30,15 +30,19 @@ Same vectors as previous test, resolved only the reduction NOR to OR for the MSB
 Test cases were wrongly interpreted. Case of inputs a = 10, b = 80000008, and sub is resulting in the wrong value
 Exp_res = cc989680, Res = 4c989680 (MSB is wrong =>  sign-bit error?)
 TODO: Recheck output sign logic (***resolved***)
+This was resolved by flipping (XOR) originally conceptualized sign logic when op=1 (when subtracting) and ageb=0 (when b is larger, due to which obviously a0 = b, b0 = a, but flipping operands for mantissa sub must also flip sign)
 
 ### Test 5
 **Date:** 17-03-2026
 **File:** [t5](/docs/logs/t4-170326.png)
-Erroneous cases:
+*Erroneous cases:*
 (a) FAIL: a=00000001 b=00000002 op=0 expected=00000003 got=00800003
 (b) FAIL: a=80000001 b=00000001 op=0 expected=00000000 got=80000000
-Possible issues:
+*Possible issues:*
 (a) exp is incremented by 1 for mantissa denormalization at the beginning, must subtract 1 if result exponent is 1 and mantissa does not have leading 1 (result is subnormal)
 (b) +0 and -0 error, both are same, must enforce +0 always
-TODO: Resolve (a) and (b)
+*TODO*: Resolve (a) and (b)
 (b) has been resolved (I think). A decrementer is required for (a), in the case where both inputs are sub-normal and the result is also sub-normal
+*Fixes:*
+(a) was resolved by gating the result exponent after rounding. For both sub-normal operands, if the result is sub-normal, exponent must be 8'h01 (add 1 initially, before exp_comparator stage, to adjust for sub-normal numbers). No need for decrementer or subtracter. In fact, just gate LSB, make it 0 when sub-normal, else it will be normal or it will be incremented during rounding anyways. It is guaranteed all other exp bits will be 0 when checking for resm_isSubnormal from result mantissa.
+(b) was resolved by gating sign-bit with maddres_isZero (mantissa-add-result-is-zero), obtained by shifting priority encoder

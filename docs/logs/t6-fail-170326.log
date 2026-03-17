@@ -1,0 +1,6 @@
+FAIL: a=3f800000 b=0da24260 op=0 expected=3f800000 got=3f8a2426
+FAIL: a=0da24260 b=3f800000 op=1 expected=bf800000 got=bf6bb7b4
+FAIL: a=00000001 b=80800000 op=0 expected=807fffff got=807ffffe
+FAIL: a=60ad78ec b=3f800000 op=0 expected=60ad78ec got=60cd78ec
+FAIL: a=60ad78ec b=bf800000 op=1 expected=60ad78ec got=60cd78ec
+FAIL: a=e0ad78ec b=3f800000 op=0 expected=e0ad78ec got=e08d78ec

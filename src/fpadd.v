@@ -39,9 +39,11 @@ module fpadd #(
     wire [le-1:0] resesub;
     wire [le-1:0] reseadd;
     wire [le-1:0] rese_bround;
+    wire [le-1:0] rese_around;
     wire maddcout;
     wire flag;
     wire round_cout;
+    wire resm_isSubnormal;
     
 
     assign na = |(a[le+lm-1:lm]); // Reduction OR -> 0 iff all bits are 0 : Case of subnormal numbers ->  1 otherwise : Normal numbers (with NaN and inf being exceptions)
@@ -174,7 +176,7 @@ module fpadd #(
         .shamt(a0e_lshamt_min),
         .out(maddres_ls)
     );
-    assign c[lm+le] = (a0s ^ flag ^ (op&~ageb))&~maddres_isZero; // sign of the result
+    assign c[lm+le] = (a0s ^ flag ^ (op&~ageb))&~maddres_isZero; // sign of the result, -0 is not allowed, pushed to +0
 
     mux #(
         .W(lm+4),
@@ -221,13 +223,17 @@ module fpadd #(
         .out(rese_bround)
     );
 
+    assign resm_isSubnormal = ~round_cout&~resm[lm]; // if round_cout=1, rounding overflow => result is clearly normal, or if round_cout = 0 and resm[lm]=1, result leading 1 exists => result is normal, else subnormal
+    // exp has an added extra one when adjusting for sub-normal operands, which must be removed if result is also 
     inc #(
         .W(le)
     ) ince_round (
         .in(rese_bround),
         .cin(round_cout),
-        .out(c[lm+le-1:lm]),
+        .out(rese_around),
         .cout()
     );
+
+    assign c[lm+le-1:lm] = {rese_around[le-1:1],rese_around[0]&~resm_isSubnormal}; // may not be most optimal logic, can substitute for round_cout and resm[lm] directly if needed
 
 endmodule

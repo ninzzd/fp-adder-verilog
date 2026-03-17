@@ -7,10 +7,12 @@ gtkwave fpadd_tb.vcd
 module fpadd_tb;
     parameter lm = 23, le = 8;
     integer file;
+    integer fail_log;
     integer n;
     integer nflag;
     integer vecflag;
     integer i;
+    integer fail_count;
     reg  [lm+le:0] a;
     reg  [lm+le:0] b;
     reg            op;
@@ -34,6 +36,7 @@ module fpadd_tb;
         $dumpfile("fpadd_tb.vcd");
         $dumpvars(0, fpadd_tb);
         file = $fopen("./test_vectors.csv","r");
+        fail_count = 0;
         if(file == 0) begin
             $display("Error opening file");
             $finish;
@@ -55,6 +58,16 @@ module fpadd_tb;
             if(err) begin
                 $display("FAIL: a=%h b=%h op=%0d expected=%h got=%h",
                         a, b, op, exp_res, c);
+                if(fail_count == 0) begin
+                    fail_log = $fopen("./docs/logs/fail_log.log","w");
+                    if(fail_log == 0)begin
+                        $display("Error in creating log file for failed cases. Ending simulation...");
+                        $finish;
+                    end
+                end
+                $fdisplay(fail_log,"FAIL: a=%h b=%h op=%0d expected=%h got=%h",
+                        a, b, op, exp_res, c);
+                fail_count = fail_count + 1;
             end
             else begin
                 $display("PASS: a=%h b=%h op=%0d result=%h",
