@@ -34,7 +34,7 @@ This was resolved by flipping (XOR) originally conceptualized sign logic when op
 
 ### Test 5
 **Date:** 17-03-2026
-**File:** [t5](/docs/logs/t4-170326.png)
+**File:** [t5](/docs/logs/t5-170326.png)
 *Erroneous cases:*
 (a) FAIL: a=00000001 b=00000002 op=0 expected=00000003 got=00800003
 (b) FAIL: a=80000001 b=00000001 op=0 expected=00000000 got=80000000
@@ -46,3 +46,20 @@ This was resolved by flipping (XOR) originally conceptualized sign logic when op
 *Fixes:*
 (a) was resolved by gating the result exponent after rounding. For both sub-normal operands, if the result is sub-normal, exponent must be 8'h01 (add 1 initially, before exp_comparator stage, to adjust for sub-normal numbers). No need for decrementer or subtracter. In fact, just gate LSB, make it 0 when sub-normal, else it will be normal or it will be incremented during rounding anyways. It is guaranteed all other exp bits will be 0 when checking for resm_isSubnormal from result mantissa.
 (b) was resolved by gating sign-bit with maddres_isZero (mantissa-add-result-is-zero), obtained by shifting priority encoder
+
+### Test 6
+**Date:** 17-03-2026
+**File:** [t6](/docs/logs/t6-fail-170326.log)
+1.  FAIL: a=3f800000 b=0da24260 op=0 expected=3f800000 got=3f8a2426
+    **Potential causes**:
+    - exp_b is 100 less than exp_a, mantissa_right shifter should result in all 0 bits.
+  
+    **Observations**:
+    - Noticed that shamt after clipping, is coming to be 4, input shamt was 64. It should be pass 23 as shamt gets clipped for all values >= 23. 
+    - In the code, the min module is outputting the minimum of shamt[\$clog2(lm+4)-1:0] and lm_add_3. In this case, shamt[le-1:0] entrely represents 64, while shamt[\$clog2(lm+4)-1:0] = shamt[4:0] = 5'b00100 = 4 (observed shift amount). I was comparing only the lower bits that were the smallest number of bits sufficient to represent lm+3. But higher bits of shamt[le-1:0] easily makes shamt larger than lm+3 = 26. Hence, not considering upper bits is incorrect. Instead, represent lm+3 = 26 in le-number of bits (8-bit instead of 5-bit) and then compare.
+ 
+    **Fixes and Post-Fix Observations:**
+    - Except test case 3 from t6, every other failed test was resolved. All other test cases also incuded the same mantissa related errors caused by shamt clipping in the lower-mantissa right-shifter.
+    - t7 logs basically contains test case 3 from t6 and nothing else, good stuff.
+
+[Not going to represent other cases as they were fixed by (1). Test case 3 will be handled in t7]

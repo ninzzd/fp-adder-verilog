@@ -8,19 +8,19 @@ module lm_r_shifter
     output [lm+3:0] out
 );
     genvar i;
-    wire [$clog2(lm+4)-1:0] shamt_;
+    wire [le-1:0] shamt_;
     wire s_add_cout;
     wire [$clog2(lm+4)-1:0] shamt_sub_3;
     wire [lm:0] s_in;
     wire [lm-1:0] in_or;
     wire temp_s;
-    wire [$clog2(lm+4)-1:0] lm_add_3;
+    wire [le-1:0] lm_add_3;
     assign lm_add_3 = lm + 3;
 
     min #(
-        .W($clog2(lm+4))
+        .W(le)
     ) shamt_min (
-        .a(shamt[$clog2(lm+4)-1:0]),
+        .a(shamt),
         .b(lm_add_3),
         .out(shamt_)
     );
@@ -87,7 +87,7 @@ module lm_r_shifter
     add #(
         .W($clog2(lm+4))
     ) shamt_sub (
-        .a(shamt_),
+        .a(shamt_[$clog2(lm+4)-1:0]),
         .b({{ONEEXT{1'b1}},2'b01}),
         .cin(1'b0),
         .s(shamt_sub_3),
@@ -99,8 +99,8 @@ module lm_r_shifter
         .W(1)
     ) s_mux ( // selecter for sticky bit
         .in({s_in}),
-        .sel(shamt_sub_3[$clog2(lm)-1:0]),
+        .sel(shamt_sub_3[$clog2(lm+1)-1:0]),
         .out(temp_s)
     );
-    assign out[0] = (temp_s === 1'bX ? 1'b1 : temp_s) & s_add_cout; // 
+    assign out[0] = (temp_s === 1'bX ? 1'b1 : temp_s) & s_add_cout; // only for simulation 
 endmodule

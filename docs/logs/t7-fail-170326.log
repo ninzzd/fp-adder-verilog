@@ -1,0 +1,1 @@
+FAIL: a=00000001 b=80800000 op=0 expected=807fffff got=807ffffe
