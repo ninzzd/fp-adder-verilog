@@ -24,3 +24,21 @@ Same vectors as previous test, resolved only the reduction NOR to OR for the MSB
 3. In 2nd vector, a = 0.5, b = 0.5, op = 1(sub), result_exp = 0110_0100b = 64h = 100d = -27d (unbiased)
     Likely cause: Due to this resm_p_encoder outputting isZero=1 and shamt=26. isZero is not being used (***resolved***)
 
+### Test 4
+**Date:** 17-03-2026
+**File:** [t4](/docs/logs/t4-170326.png)
+Test cases were wrongly interpreted. Case of inputs a = 10, b = 80000008, and sub is resulting in the wrong value
+Exp_res = cc989680, Res = 4c989680 (MSB is wrong =>  sign-bit error?)
+TODO: Recheck output sign logic (***resolved***)
+
+### Test 5
+**Date:** 17-03-2026
+**File:** [t5](/docs/logs/t4-170326.png)
+Erroneous cases:
+(a) FAIL: a=00000001 b=00000002 op=0 expected=00000003 got=00800003
+(b) FAIL: a=80000001 b=00000001 op=0 expected=00000000 got=80000000
+Possible issues:
+(a) exp is incremented by 1 for mantissa denormalization at the beginning, must subtract 1 if result exponent is 1 and mantissa does not have leading 1 (result is subnormal)
+(b) +0 and -0 error, both are same, must enforce +0 always
+TODO: Resolve (a) and (b)
+(b) has been resolved (I think). A decrementer is required for (a), in the case where both inputs are sub-normal and the result is also sub-normal

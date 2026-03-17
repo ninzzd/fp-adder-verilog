@@ -12,6 +12,8 @@ module fpadd #(
 
     wire [lm:0] am; // complete mantissa of a with leading bit after decimal point
     wire [lm:0] bm; // complete mantissa of b with leading bit after decimal point
+    wire [le-1:0] ae_adj; // Adjusted for subnormal case
+    wire [le-1:0] be_adj;
 
     wire [lm:0] a0m;
     wire [le-1:0] a0e;
@@ -50,6 +52,22 @@ module fpadd #(
 
     assign maddop = a[lm+le] ^ b[lm+le] ^ op;
 
+    inc #(
+        .W(le)
+    ) ae_inc_sbnrm(
+        .in(a[lm+le-1:lm]),
+        .cin(~na),
+        .out(ae_adj)
+    );
+
+    inc #(
+        .W(le)
+    ) be_inc_sbnrm(
+        .in(b[lm+le-1:lm]),
+        .cin(~nb),
+        .out(be_adj)
+    );
+
     mux #(.W(lm+1), .N(2)) a0m_mux (
         .in({am,bm}),
         .sel(ageb),
@@ -75,8 +93,8 @@ module fpadd #(
     );
 
     e_comparator #(.le(le)) exp_comp (
-        .a(a[le+lm-1:lm]),
-        .b(b[le+lm-1:lm]),
+        .a(ae_adj),
+        .b(be_adj),
         .a_ge_b(ageb),
         .m_shamt(b0_shamt),
         .a0e(a0e)
@@ -156,7 +174,7 @@ module fpadd #(
         .shamt(a0e_lshamt_min),
         .out(maddres_ls)
     );
-    assign c[lm+le] = a0s ^ flag; // sign of the result
+    assign c[lm+le] = (a0s ^ flag ^ (op&~ageb))&~maddres_isZero; // sign of the result
 
     mux #(
         .W(lm+4),
