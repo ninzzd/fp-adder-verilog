@@ -9,7 +9,7 @@ module inc_tb;
     wire [7:0] out;
     wire cout;
 
-    inc #(.W(8)) inc_inst (
+    inc #(.W(8)) uut (
         .cin(cin),
         .in(in),
         .out(out),

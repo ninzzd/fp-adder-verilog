@@ -63,3 +63,27 @@ This was resolved by flipping (XOR) originally conceptualized sign logic when op
     - t7 logs basically contains test case 3 from t6 and nothing else, good stuff.
 
 [Not going to represent other cases as they were fixed by (1). Test case 3 will be handled in t7]
+
+### Test 7
+**Date:** 18-03-2026
+**File:** [t7](/docs/logs/t6-fail-170326.log)
+1. FAIL: a=00000001 b=80800000 op=0 expected=807fffff got=807ffffe
+   **Observations**:
+   - I analyzed the GTKwave output. Both inputs are sub-normal, the output is also supposed to be sub-normal
+   - subnormal numbers are represented with mantissas that have MSB to be 0 instead of 1, and biased exp is always 1 (forcibly incremented)
+   - after result mantissa is computed, leading zeros are checked for (result = 3FFFFF8) => priority encoder outputs 1 as shamt
+   - 1 is compared with current exponent of A0 (operand with exp greater than or equal to other), which is also 1 cuz of the second point
+   - final shamt is 1, which is not correct, it is supposed to be zero
+  
+   **Thoughts**
+   - I need to handle shamt for sub-normal inputs and if the result is sub-normal, A0 will always be 1 in this case. Irrespective of number of leading zeros in the subnormal result, you'll always have a shamt of 1 because shamt = min(exp_a0,pe_out), unless pe_out is 0, in which case result had a leading one, which is normal, not sub-normal
+   - => when both a and b are sub-normal, if mantissa result is also sub-normal, mantissa will always be shifted by 1
+   - exp_a0 should be checked if its 1 or not, and if so, result mantissa should be checked if it is sub-normal
+   - note: rounding does not face any issue because g,r and s bits will always be 0 with both sub-normal operands, you will always round down, truncate grs
+   - in this case, one input is subnormal, the other input is the smallest possible normal number, and are being subtracted, resulting in a sub-normal number
+   - irrespective of sub-normal addition or normals being subtracted, there may be cases wherein, after left-shifting mantissa by a certain amount, adjusted exponent could be 1, and there still may not be a leading zero. The result is already sub-normal in such cases, but the current left shifter and priority encoder try to shift till there exists a leading 1 or till exp_a0 becomes 0. But in the true representation of sub-normal numbers, exp is 1 always, with no leading 1. this not being accounted to by the leading-zeros left shift logic: sub-normal domain doesn't start at exp=0, it starts at exp=1. pe_out (maddres_lshamt) should not be clipped to exp_ao (a0e), it should be clipped to a0e-1, such that a0e - clipped(maddres_lshamt) >= 1
+   - this won't affect the case of normal results, maddres_lshamt will mostly if not always be the minimum, and not a0e
+   - circuit for sub-normal representation of output is ready.
+   - one thing is left to be checked: if I declare result to be sub-normal during leading zero shift, is it possible for mantissa increment while rounding to result in a leading 1 (sub-normal becomes normal after rounding)
+   - the rounding part should still be fine: round_cout cannot be 1 (MSB is already 0 due to subnormal). if MSB of resm_around is 0, resm_isSubnormal is triggered, rese_bround (output of a0e - clipped(maddres_lshamt)) will be made 0. If MSB of resm_around is 1, rounding produces normal result, for which rese_bround is already decimal 1, resm_isSubnormal is not triggered, so result must be still valid
+   - Finally: change min(a0e, maddres_lshamt) to min(a0e-1,maddres_lshamt) before the subtraction to get rese_bround : build dedicated decrementer circuit
