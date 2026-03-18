@@ -17,6 +17,7 @@ module fpadd #(
 
     wire [lm:0] a0m;
     wire [le-1:0] a0e;
+    wire [le-1:0] a0e_sub_1; // a0e - 1
     wire [lm:0] b0m;
     wire [lm+3:0] b0m_shifted;
     wire a0s;
@@ -141,10 +142,17 @@ module fpadd #(
         .shamt(maddres_lshamt)
     );
 
+    dec #(
+        .W(le)
+    ) a0e_dec (
+        .in(a0e),
+        .out(a0e_sub_1)
+    );
+
     min #(
         .W(le)
     ) a0e_lshamt_cap (
-        .a(a0e),
+        .a(a0e_sub_1), // intermediate representation of sub-normal requires for exp >= 1, non-zero
         .b(maddres_lshamt),
         .out(a0e_lshamt_min)
     );

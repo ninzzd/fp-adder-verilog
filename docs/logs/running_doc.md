@@ -73,7 +73,7 @@ This was resolved by flipping (XOR) originally conceptualized sign logic when op
    - subnormal numbers are represented with mantissas that have MSB to be 0 instead of 1, and biased exp is always 1 (forcibly incremented)
    - after result mantissa is computed, leading zeros are checked for (result = 3FFFFF8) => priority encoder outputs 1 as shamt
    - 1 is compared with current exponent of A0 (operand with exp greater than or equal to other), which is also 1 cuz of the second point
-   - final shamt is 1, which is not correct, it is supposed to be zero
+   - final shamt is 1, which is not correct, it is supposed to be zero (***resolved***)
   
    **Thoughts**
    - I need to handle shamt for sub-normal inputs and if the result is sub-normal, A0 will always be 1 in this case. Irrespective of number of leading zeros in the subnormal result, you'll always have a shamt of 1 because shamt = min(exp_a0,pe_out), unless pe_out is 0, in which case result had a leading one, which is normal, not sub-normal
@@ -87,3 +87,5 @@ This was resolved by flipping (XOR) originally conceptualized sign logic when op
    - one thing is left to be checked: if I declare result to be sub-normal during leading zero shift, is it possible for mantissa increment while rounding to result in a leading 1 (sub-normal becomes normal after rounding)
    - the rounding part should still be fine: round_cout cannot be 1 (MSB is already 0 due to subnormal). if MSB of resm_around is 0, resm_isSubnormal is triggered, rese_bround (output of a0e - clipped(maddres_lshamt)) will be made 0. If MSB of resm_around is 1, rounding produces normal result, for which rese_bround is already decimal 1, resm_isSubnormal is not triggered, so result must be still valid
    - Finally: change min(a0e, maddres_lshamt) to min(a0e-1,maddres_lshamt) before the subtraction to get rese_bround : build dedicated decrementer circuit
+  
+Case (1) has been ***resolved***
