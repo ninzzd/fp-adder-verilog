@@ -1,7 +1,7 @@
 # Floating-Point Adder and Subtractor
 A project implementing variable-precision floating-point arithmetic units, specifically for addition and subtraction, in accordance with the IEEE 754 floating-point standards.
 ## Micro-Architecture
-![Microarchtiectural Diagram](/docs/microarch_diag.jpg)
+![Microarchtiectural Diagram](/docs/uarch_diag.jpg)
 
 ## Hierarchy
 
@@ -27,8 +27,8 @@ Refer to [this page](/docs/README.md) for detailed documentation regarding imple
 
 ## RoadMap
 - [x] Handles additions/subtractions of normalized numbers.
-- [ ] Accounts for sub-normal numbers.
-- [ ] Handles +0, -0
+- [x] Accounts for sub-normal numbers.
+- [x] Handles +0, -0
 - [ ] Handles $+\infty$, $-\infty$
 - [ ] Handles NaN propagation
 - [ ] Extensive testing with SoftFloat
