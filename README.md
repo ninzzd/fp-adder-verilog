@@ -1,4 +1,9 @@
 # Variable-Precision Floating-Point Adder
+
+![Verilog](https://img.shields.io/badge/Language-Verilog-blue.svg)
+![Status](https://img.shields.io/badge/Status-Active-brightgreen.svg)
+![License](https://img.shields.io/badge/License-MIT-green.svg)
+
 A from-scratch, hardware-level implementation of IEEE-754 floating-point addition/subtraction in Verilog HDL, built as a learning resource for deep architectural understanding.
 ## Why This Project Exists?
 Most resources on IEEE-754 floating-point addition:
@@ -10,6 +15,11 @@ This project bridges that gap.
 It is designed as:
 - a **learning resource** for understanding floating-point arithmetic at the hardware level
 - a **fully working Verilog implementation** that closely mirrors the actual datapath
+
+## Features
+- **Comprehensive Handling:** Accounts for standard normalized numbers as well as sub-normal numbers, `+0`, and `-0`.
+- **Synthesizable RTL:** Pure Verilog HDL implementation mapping closely to a real hardware datapath.
+- **Custom Testing Tools:** Includes a C-based binary test vector generator (`real2hex`) for rigorous, automated test coverage.
 
 ## Get Started
 ### Pre-Requisites
@@ -25,13 +35,13 @@ cd fp-adder-verilog
 ### Test Vector Generation
 Compile *real2hex* binary test vector generator:
 ```bash
-gcc -g tb/real2hex.c -o tb/reah2hex.out
+gcc -g tb/real2hex.c -o tb/real2hex.out
 ```
 Run *real2hex*:
 ```bash
 ./tb/real2hex.out
 ```
-Follow the below format for providingtest vectors as inputs to *real2hex*:
+Follow the below format for providing test vectors as inputs to *real2hex*:
 ```csv
 n <total no. of test vectors>
 a1 <operand a of test vector 1>, b1 <operand a of test vector 1>, op1 <0 for add, 1 for sub>
@@ -49,7 +59,7 @@ As a simple example, you may copy the following test vector set and paste in the
 0.99999994, 5.96046448e-08, 0
 1.17549421e-38, 1.40129846e-45, 0
 ```
-Click ```ENTER```. A file named ```test_vectors.csv``` would be generated in the working directory.
+Press `ENTER`. A file named `test_vectors.csv` will be generated in the working directory.
 
 ### Verilog Simulation
 Compile the main testbench:
@@ -78,12 +88,12 @@ To view the digital waveforms of various signals, wires and regs in the verilog 
 gtkwave fpadd_tb.vcd
 ```
 You should expect the following waveforms:
-![](/docs/wavefroms_eg.png)
+![Waveforms Example](./docs/waveforms_eg.png)
 Double-click on the wire/reg names to view their waveforms.
 ## Micro-Architecture
 The hand-drawn diagram below depicts the micro-architectural implementation of the floating-point adder, which directly matches the Verilog hardware description, with some minor differences in nomenclature and naming.
 
-![Microarchtiectural Diagram](/docs/uarch_diag.jpg)
+![Microarchitectural Diagram](./docs/uarch_diag.jpg)
 
 ## File Hierarchy
 ```text
@@ -102,7 +112,7 @@ The hand-drawn diagram below depicts the micro-architectural implementation of t
 ```
 
 ## Documentation
-Refer to [this page](/docs/README.md) for detailed documentation regarding implementation details, architecture, testbenches and analyses.
+Refer to [this page](./docs/README.md) for detailed documentation regarding implementation details, architecture, testbenches and analyses.
 
 ## RoadMap
 - [x] Handles additions/subtractions of normalized numbers.
@@ -113,3 +123,6 @@ Refer to [this page](/docs/README.md) for detailed documentation regarding imple
 - [ ] Extensive testing with SoftFloat
 - [ ] Pipelining and multi-cycle design
 - [ ] Testing on FPGA hardware and benchmarking
+
+## License
+This project is open-source and available under the terms of the [MIT License](LICENSE).
