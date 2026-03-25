@@ -1,7 +1,7 @@
 # Variable-Precision Floating-Point Adder
 
 ![Verilog](https://img.shields.io/badge/Language-Verilog-blue.svg)
-![Status](https://img.shields.io/badge/Status-Active-brightgreen.svg)
+![Status](https://img.shields.io/badge/Status-Simulation_Complete-brightgreen.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
 A from-scratch, hardware-level implementation of IEEE-754 floating-point addition/subtraction in Verilog HDL, built as a learning resource for deep architectural understanding.
@@ -90,8 +90,8 @@ gtkwave fpadd_tb.vcd
 You should expect the following waveforms:
 ![Waveforms Example](./docs/waveforms_eg.png)
 Double-click on the wire/reg names to view their waveforms.
-## Micro-Architecture
-The hand-drawn diagram below depicts the micro-architectural implementation of the floating-point adder, which directly matches the Verilog hardware description, with some minor differences in nomenclature and naming.
+## Architecture
+The hand-drawn diagram below depicts the micro-architectural implementation of the floating-point adder, which directly matches the Verilog hardware description, with some minor differences in nomenclature and naming. This is particularly for the digital design enthusiasts and architectural thinkers out there :)
 
 ![Microarchitectural Diagram](./docs/uarch_diag.jpg)
 
@@ -112,7 +112,17 @@ The hand-drawn diagram below depicts the micro-architectural implementation of t
 ```
 
 ## Documentation
-Refer to [this page](./docs/README.md) for detailed documentation regarding implementation details, architecture, testbenches and analyses.
+Given below are the major components of the floating-point adder and their corresponding documentation links:
+- [Exponent Comparator](./docs/exponent_comparator.md)
+- [Mantissa Alignment](./docs/mantissa_alignment.md)
+- [Mantissa Adder/Subtractor](./docs/mantissa_adder_subtractor.md)
+- [Leading Zero Detector](./docs/leading_zero_detector.md)
+- [Normalization](./docs/normalization.md)
+- [Rounding](./docs/rounding.md)
+- [Sign Handling](./docs/sign_handling.md)
+- [Special Value Detection](./docs/special_value_detection.md)
+
+Refer to [this page](./docs/theory.md) for detailed documentation on floating-point adder theory.
 
 ## RoadMap
 - [x] Handles additions/subtractions of normalized numbers.

@@ -20,13 +20,5 @@ However, a noticable flaw in this incomplete representation is that only fractio
 
 ## Sub-normal Numbers
 
-
-
-# Hardware Implementation
-## Exponent Comparator
-## Right-Shifter for Lower Mantissa
-## Result Mantissa Priority Encoder
-## Result Mantissa Left Shifter
-# Utility Hardware
 # Reference
 - [IEEE Standard for Floating-Point Arithmetic](https://drive.google.com/file/d/1d_NoahP3ChJ9Ol-pxoWtLSK2fnfYp0FW/view?usp=sharing) 
