@@ -102,5 +102,5 @@ module lm_r_shifter
         .sel(shamt_sub_3[$clog2(lm+1)-1:0]),
         .out(temp_s)
     );
-    assign out[0] = (temp_s === 1'bX ? 1'b1 : temp_s) & s_add_cout; // only for simulation 
+    assign out[0] = temp_s & s_add_cout; // only for simulation 
 endmodule
