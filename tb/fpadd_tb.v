@@ -1,9 +1,9 @@
-/*
-To run:
-iverilog -o fpadd_tb.vvp tb/fpadd_tb.v src/*.v src/utils/*.v src/datapath/*.v
-vvp fpadd_tb.vvp
-gtkwave fpadd_tb.vcd
-*/
+// To run (from the repo root):
+//   iverilog -s fpadd_tb -o fpadd_tb.vvp tb/fpadd_tb.v rtl/fpadd.v rtl/utils/*.v rtl/datapath/*.v
+//   vvp fpadd_tb.vvp
+//   gtkwave fpadd_tb.vcd
+// Keep this header in line comments: a file glob inside a block comment reads
+// as a nested comment opener, which iverilog 12.0-2build2 rejects as an error.
 module fpadd_tb;
     parameter lm = 23, le = 8;
     integer file;

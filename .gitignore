@@ -24,3 +24,6 @@ test_vectors.csv
 
 # Obsidian metadata
 .obsidian/
+
+# Claude
+.claude
