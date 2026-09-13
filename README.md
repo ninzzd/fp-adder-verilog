@@ -126,8 +126,12 @@ Refer to the linked files for a deep dive into the project.
 ### Validation
 - [FP32 Golden Model in C](./docs/real2hex.md)
 - [GMP Golden Model](./docs/gmp_golden_sweep.md)
-## Results
-Refer
+### Implementation
+- [Synthesis](./docs/synthesis.md)
+- [Static Timing Analysis](./docs/sta.md)
+- [ORFS Flow](./docs/orfs_flow.md)
+## Validation Results
+
 | Precision | $le$ | $lm$ | $N_{samples}$ | $N_{fail}$ | Accuracy | Execution Time |
 | --- | --- | --- | --- | --- | --- | --- | 
 | fp32 | 8 | 23 | 200000 | 0 | 100% | 35m 29s |
@@ -135,6 +139,17 @@ Refer
 | E4M3 | 4 | 3 | 131072 | 0 | 100% | 42s 926ms |
 | E5M2 | 5 | 2 | 131072 | 0 | 100% | 31s 225ms |
 | E4M4 | 4 | 4 | 524288 | 0 | 100% | 3m 00s |
+
+### ASIC Implementation (fp32, nangate45)
+RTL-to-GDS with [OpenROAD-flow-scripts](https://github.com/The-OpenROAD-Project/OpenROAD-flow-scripts), signed off at a 5.0 ns clock (details in [ORFS Flow](./docs/orfs_flow.md)).
+
+| Fmax | Worst setup / hold slack | Area | Power | DRC / setup / hold violations |
+| --- | --- | --- | --- | --- |
+| 214.43 MHz | +0.34 ns / +0.07 ns | 4160 µm² | 3.69 mW | 0 / 0 / 0 |
+
+| Full layout | Worst setup path |
+| :---: | :---: |
+| <img src="./docs/images/orfs/final_all.webp" width="400" alt="Final layout"> | <img src="./docs/images/orfs/final_worst_path.webp" width="400" alt="Worst setup path"> |
 
 ## RoadMap
 
@@ -146,7 +161,8 @@ Refer
 - [x] Handles NaN propagation
 
 ### V1.1 - Performance Analysis (Unpipelined)
-- [ ] STA/critical-path analysis
+- [x] STA/critical-path analysis
+- [x] RTL-to-GDSII flow
 - [ ] FPGA prototyping: resource utilization + baseline Fmax
 - [ ] Profiling: Fmax, power, area for bit-widths: fp32, fp16, bf16, sweeps
 

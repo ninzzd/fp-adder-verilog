@@ -3,22 +3,22 @@
 // Override the format with -P, e.g. -Pfpadd_top.lm=7 -Pfpadd_top.le=8 (bf16).
 // Keep this header in line comments: a file glob inside a block comment reads
 // as a nested comment opener, which iverilog 12.0-2build2 rejects as an error.
-module #(
+module fpadd_top #(
     parameter lm = 23,
     parameter le = 8
-) fpadd_top
+) 
 (
     input clk,
-    input rst_p,
-    input [lm+le:0] a_in;
-    input [lm+le:0] b_in;
+    input rst_n,
+    input [lm+le:0] a_in,
+    input [lm+le:0] b_in,
     input op_in,
 
-    output reg [lm+le:0] c_out;
+    output reg [lm+le:0] c_out
 );
 
 reg [lm+le:0] a, b;
-rep op;
+reg op;
 wire [lm+le:0] c;
 
 fpadd #(

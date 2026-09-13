@@ -27,3 +27,9 @@ test_vectors.csv
 
 # Claude
 .claude
+
+# ORFS outputs (logs, reports, results, objects)
+asic/orfs/
+
+# Yosys outputs
+asic/yosys/
