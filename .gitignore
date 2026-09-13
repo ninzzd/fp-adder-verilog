@@ -21,3 +21,6 @@ test_vectors.csv
 
 # Python Virtual Environment Directory
 .venv/ 
+
+# Obsidian metadata
+.obsidian/

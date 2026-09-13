@@ -24,7 +24,8 @@ It is designed as:
 ## Get Started
 ### Pre-Requisites
 - [*Icarus Verilog*](https://steveicarus.github.io/iverilog/) (for compiling and running Verilog simulations) & [*GTKWave*](https://gtkwave.sourceforge.net/) (for waveform viewing, optional)
-- Advanced EDA tools such as [*Vivado*](https://www.xilinx.com/support/download/index.html/content/xilinx/en/downloadNav/vivado-design-tools.html) and/or [*Quartus*](https://www.intel.com/content/www/us/en/collections/products/fpga/software/downloads.html) (for simulation, synthesis and implementation, optional)
+- Advanced EDA tools such as [*Vivado*](https://www.xilinx.com/support/download/index.html/content/xilinx/en/downloadNav/vivado-design-tools.html) and/or [*Quartus*](https://www.intel.com/content/www/us/en/collections/products/fpga/software/downloads.html) (for simulation, FPGA synthesis and implementation, optional)
+- [*Yosys*](https://yosyshq.net/yosys/) (for Verilog RTL synthesis)
 
 ### Repository Cloning 
 ```bash
