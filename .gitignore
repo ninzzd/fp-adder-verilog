@@ -27,3 +27,7 @@ test_vectors.csv
 
 # Claude
 .claude
+
+# ASIC Generated Directories
+asic/orfs
+asic/yosys
