@@ -1,14 +1,16 @@
 # Real2Hex
-**File** - `tb/real2hex.c`
+**File** - [`tb/real2hex.c`](../tb/real2hex.c)
 ## Purpose
 - To convert decimal fp32 test vectors (read from `stdin`) into the hex `test_vectors.csv` format consumed by the Verilog testbench.
 - To compute the native-`float` add/sub reference result for each vector, using the host's own IEEE-754 fp32 hardware, so `test_vectors.csv` already carries the expected result alongside the inputs.
-- Hardwired to the host's native `float`, i.e. fp32 (`lm=23, le=8`) only — unlike `tb/gmp_golden_sweep.py`, which builds golden references arithmetically for any `(lm, le)`.
+- Hardwired to the host's native `float`, i.e. fp32 (`lm=23, le=8`) only — unlike [`scripts/gmp_golden_sweep.py`](./gmp_golden_sweep.md), which builds golden references arithmetically for any `(lm, le)`.
 
 ## Usage
 ```
-./real2hex < input.csv     # writes ./test_vectors.csv
+gcc -g tb/real2hex.c -o tb/real2hex.out
+./tb/real2hex.out < input.csv     # writes ./test_vectors.csv
 ```
+- Run it from the repo root, since `tb/fpadd_tb.v` reads `./test_vectors.csv` relative to the working directory. Without a redirect, the vectors can also be typed or pasted into the terminal.
 - `stdin` format: first line is the vector count `n`, followed by `n` lines of `a,b,mode` (decimal floats `a`, `b`, and `mode` as `0`=add / `1`=sub).
 - Output `test_vectors.csv` format: first line is `n`, followed by `n` lines of `a_hex,b_hex,mode,result_hex` (8 hex digits each, fp32 bit patterns).
 

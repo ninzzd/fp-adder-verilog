@@ -1,16 +1,17 @@
 # GMP Golden Sweep
-**File** - `tb/gmp_golden_sweep.py`
+**File** - [`scripts/gmp_golden_sweep.py`](../scripts/gmp_golden_sweep.py)
 ## Purpose
 - To functionally verify the `fpadd` DUT against a GMP/MPFR-backed golden model, for **any** `(lm, le)` bit-width, not just fp32.
 - Unlike `tb/real2hex.c` (hardwired to the host's native `float`, i.e. fp32 only), this script builds the golden reference arithmetically using `gmpy2`, by constructing an MPFR context whose `(precision, emin, emax)` exactly reproduce the target `(lm, le)` format's rounding, overflow-to-infinity and gradual-underflow-to-subnormal behaviour.
-- To drive the *actual* `tb/fpadd_tb.v` testbench (which instantiates the `fpadd` DUT directly) via `iverilog`/`vvp` as a subprocess, overriding its `lm`/`le` parameters at compile time with `-P`. Nothing under `tb/` or `src/` is modified.
+- To drive the *actual* `tb/fpadd_tb.v` testbench (which instantiates the `fpadd` DUT directly) via `iverilog`/`vvp` as a subprocess, overriding its `lm`/`le` parameters at compile time with `-P`. Nothing under `tb/` or `rtl/` is modified.
 
 ## Usage
 ```
-python3 tb/gmp_golden_sweep.py --lm 3 --le 4                  # exhaustive
-python3 tb/gmp_golden_sweep.py --lm 23 --le 8 --sample 200000  # fp32, sampled
-python3 tb/gmp_golden_sweep.py --lm 2 --le 3 --selftest        # sanity check only
+python3 scripts/gmp_golden_sweep.py --lm 3 --le 4                  # exhaustive
+python3 scripts/gmp_golden_sweep.py --lm 23 --le 8 --sample 200000  # fp32, sampled
+python3 scripts/gmp_golden_sweep.py --selftest                      # sanity check only
 ```
+- Requires `gmpy2` (see `requirements.txt`) and Icarus Verilog, and must be run from the repo root.
 - An exhaustive sweep covers all `2**(2*(lm+le+1))` `(a, b)` pairs, times 2 for `op` in `{0, 1}` (add/sub), and is only tractable for small custom formats (roughly `lm+le+1 <= 12-14` bits); use `--sample` for anything larger.
 
 ## Functions
@@ -34,7 +35,7 @@ python3 tb/gmp_golden_sweep.py --lm 2 --le 3 --selftest        # sanity check on
 - Exact encode of an already correctly-rounded/clamped `mpfr` value back into an `(lm, le)`-format bit pattern.
 - Matches this project's deliberate design choices (see `special_op.v`/`fpadd.v` and `docs/logs/running_doc.md`):
     - NaN always encodes as the canonical qNaN: `sign=0`, `exp=all-1s`, `mantissa=1000...0`, regardless of any NaN payload/sign.
-    - Any zero result always encodes as `+0` (sign forced to 0).
+    - Zero results follow the IEEE 754 sign rules, which MPFR already applies to the sum, so the sign of the zero is carried through (`gmpy2.is_signed`): $(-0)+(-0) = -0$ and $(-0)-(+0) = -0$, while opposite-signed zeros and exact cancellation give $+0$. (*An earlier version forced every zero to `+0`; see [Test 15](./logs/running_doc.md#test-15)*)
 - For finite non-zero values, uses `gmpy2.frexp`/`gmpy2.mul_2exp` to extract an exact `lm+1`-bit significand, then re-derives `true_exp` to decide between normal and subnormal encoding.
 - Subnormal case right-shifts the significand by `(1-bias) - true_exp` to align it to the fixed subnormal binary point.
 

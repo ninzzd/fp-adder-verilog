@@ -24,6 +24,14 @@ Same vectors as previous test, resolved only the reduction NOR to OR for the MSB
 3. In 2nd vector, a = 0.5, b = 0.5, op = 1(sub), result_exp = 0110_0100b = 64h = 100d = -27d (unbiased)
     Likely cause: Due to this resm_p_encoder outputting isZero=1 and shamt=26. isZero is not being used (***resolved***)
 
+### Test 3
+**Date:** 07-03-2026
+**File:** [t3](/docs/logs/t3-070326.png)
+Same 5 vectors as Tests 1 and 2, after using `isZero` from the priority encoder to zero the result exponent (Test 2)
+<u> Observations </u>
+1. All 5 results match the expected values (`c` = `exp_res`), including both zero results (0.5 - 0.5 and 50.0 - 50.0)
+2. `err` stays low for the whole run
+
 ### Test 4
 **Date:** 17-03-2026
 **File:** [t4](/docs/logs/t4-170326.png)
@@ -66,7 +74,7 @@ This was resolved by flipping (XOR) originally conceptualized sign logic when op
 
 ### Test 7
 **Date:** 18-03-2026
-**File:** [t7](/docs/logs/t6-fail-170326.log)
+**File:** [t7](/docs/logs/t7-fail-170326.log)
 1. FAIL: a=00000001 b=80800000 op=0 expected=807fffff got=807ffffe
    **Observations**:
    - I analyzed the GTKwave output. Both inputs are sub-normal, the output is also supposed to be sub-normal
@@ -89,6 +97,13 @@ This was resolved by flipping (XOR) originally conceptualized sign logic when op
    - Finally: change min(a0e, maddres_lshamt) to min(a0e-1,maddres_lshamt) before the subtraction to get rese_bround : build dedicated decrementer circuit
   
 Case (1) has been ***resolved***
+
+### Test 8
+**Date:** 18-03-2026
+**File:** [t8](/docs/logs/t8-testvec-180326.csv)
+New set of 20 vectors, run after the `min(a0e-1, maddres_lshamt)` fix from Test 7. The vectors target rounding (tiny addends that land in G, R and S, including ties) and the sub-normal/normal boundary (e.g. `007fffff + 00000001 = 00800000`, `00800000 - 00000001 = 007fffff`)
+<u> Observations </u>
+1. All 20 vectors passed, so no fail log was produced
 
 ### Test 9
 **Date:** *18-08-2026*
@@ -121,7 +136,7 @@ Case (1) has been ***resolved***
 
 ### Test 10
 **Date:** *18-08-2026*
-**File:** *[t10-fail-180826.log](t10-fail-180826.log)*
+**File:** *[t10-fail-180626.log](t10-fail-180626.log)*
 
 1. FAIL: a=7f800000 b=00000001 op=1 expected=7f800000 got=ff800000
 
@@ -168,7 +183,7 @@ Case (1) has been ***resolved***
     - Observed ans = `+0`
 
     Causes:
-    - My design used to enforce `+0` strictly due to `..&~maddress_isZero` in the following line in *[fpadd](../../src/fpadd.v)*:
+    - My design used to enforce `+0` strictly due to `..&~maddress_isZero` in the following line in *[fpadd](../../rtl/fpadd.v)*:
     ```verilog
         assign res_sign = (a0s ^ flag ^ (op&~ageb))&~maddres_isZero;
     ```
@@ -195,7 +210,7 @@ Case (1) has been ***resolved***
     - Shamt = 24 is very specific
     - b is normal, hence has a leading 1
     - b < a, which means that after manstissa shifting of b, leading 1 should appear in G bit (hence, specfic shamt value)
-    - However, in *[lm_r_shifter](../../src/datapath/lm_r_shifter.v)*:
+    - However, in *[lm_r_shifter](../../rtl/datapath/lm_r_shifter.v)*:
     ```verilog
         mux #(
         .N(lm+1),

@@ -1,7 +1,7 @@
 # Variable-Precision Floating-Point Adder
 
 ![Verilog](https://img.shields.io/badge/Language-Verilog-blue.svg)
-![Status](https://img.shields.io/badge/Status-Simulation_Ongoing-yellow.svg)
+![Status](https://img.shields.io/badge/Status-Simulation_Complete-green.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
 A from-scratch, gate-level implementation of IEEE-754 floating-point addition/subtraction for parameterized bit-widths, in Verilog HDL, built as a learning resource for deep architectural understanding.
@@ -17,15 +17,17 @@ It is designed as:
 - a **fully working Verilog implementation** that closely mirrors the actual datapath
 
 ## Features
-- **Comprehensive Handling:** Accounts for standard normalized numbers as well as sub-normal numbers, `+0`, and `-0`.
+- **Comprehensive Handling:** Accounts for standard normalized numbers as well as sub-normal numbers, `+0` and `-0`, $\pm\infty$, and NaNs, with round-to-nearest-even.
+- **Parameterized Precision:** Any format with `lm` mantissa bits and `le` exponent bits (satisfying $2^{le}-1 \ge lm+3$), verified for fp32, bf16, E4M3, E5M2 and E4M4.
 - **Synthesizable RTL:** Pure Verilog HDL implementation mapping closely to a real hardware datapath.
-- **Custom Testing Tools:** Includes a C-based binary test vector generator (`real2hex`) for rigorous, automated test coverage.
+- **Custom Testing Tools:** Includes a GMP/MPFR-backed golden-model sweep (`gmp_golden_sweep.py`) for exhaustive or sampled verification of any format, and a C-based fp32 test vector generator (`real2hex`).
 
 ## Get Started
 ### Pre-Requisites
 - [*Icarus Verilog*](https://steveicarus.github.io/iverilog/) (for compiling and running Verilog simulations) & [*GTKWave*](https://gtkwave.sourceforge.net/) (for waveform viewing, optional)
 - Advanced EDA tools such as [*Vivado*](https://www.xilinx.com/support/download/index.html/content/xilinx/en/downloadNav/vivado-design-tools.html) and/or [*Quartus*](https://www.intel.com/content/www/us/en/collections/products/fpga/software/downloads.html) (for simulation, FPGA synthesis and implementation, optional)
-- [*Yosys*](https://yosyshq.net/yosys/) (for Verilog RTL synthesis)
+- [*Python 3*](https://www.python.org/) with [*gmpy2*](https://pypi.org/project/gmpy2/) (for the golden-model sweep, see `requirements.txt`)
+- [*Yosys*](https://yosyshq.net/yosys/) (for Verilog RTL synthesis, optional)
 
 ### Repository Cloning 
 ```bash
@@ -65,7 +67,7 @@ Press `ENTER`. A file named `test_vectors.csv` will be generated in the working 
 ### Verilog Simulation
 Compile the main testbench:
 ```bash
-iverilog -o fpadd_tb.vvp tb/fpadd_tb.v src/*.v src/utils/*.v src/datapath/*.v
+iverilog -s fpadd_tb -o fpadd_tb.vvp tb/fpadd_tb.v rtl/fpadd.v rtl/utils/*.v rtl/datapath/*.v
 ```
 Run the compiled iverilog simulation:
 ```bash
@@ -82,6 +84,19 @@ PASS: a=3f7fffff b=33800000 op=0 result=3f800000
 PASS: a=007fffff b=00000001 op=0 result=00800000
 Simulation complete
 ```
+For other formats, override the testbench parameters at compile time, e.g. `-Pfpadd_tb.lm=7 -Pfpadd_tb.le=8` for bf16. Run all commands from the repository root, since the testbench reads `./test_vectors.csv` relative to the working directory.
+
+### Golden-Model Sweep
+Install the Python dependency:
+```bash
+pip install -r requirements.txt
+```
+Run an exhaustive sweep of a small format, or a sampled sweep of a large one:
+```bash
+python3 scripts/gmp_golden_sweep.py --lm 3 --le 4                   # E4M3, exhaustive
+python3 scripts/gmp_golden_sweep.py --lm 23 --le 8 --sample 200000  # fp32, sampled
+```
+Each run writes a log to `docs/logs/gmpsweep-lm<lm>-le<le>-<timestamp>.log` and exits with status 1 if any vector fails. See the [GMP Golden Model](./docs/gmp_golden_sweep.md) doc for details.
 
 ### Waveform Analysis
 To view the digital waveforms of various signals, wires and regs in the verilog simulation, run the following:
@@ -98,16 +113,21 @@ The hand-drawn diagram below depicts the micro-architectural implementation of t
 
 ## File Hierarchy
 ```text
-├── src/                # Source files (.v)
+├── rtl/                # RTL source files (.v)
 │   ├── datapath/       # Specific to this project, build the datapath
 │   ├── utils/          # Modules for general circuits (add, mux, inc, etc.)
 │   └── fpadd.v         # Main module source file (.v)
 ├── tb/                 # Test-bench files (.v)
 │   ├── datapath_tb/    # Test-benches for datapath-specific modules
 │   ├── utils_tb/       # Test-benches for general modules
-│   └── fpadd_tb.v      # Main test-bench file (.v)
+│   ├── fpadd_tb.v      # Main test-bench file (.v)
+│   └── real2hex.c      # fp32 test vector generator
+├── scripts/
+│   └── gmp_golden_sweep.py  # Golden-model sweep for any (lm, le)
 ├── docs/               # Documentations (.md) and diagrams
-│   └── logs/           # Waveform images and logs of test runs
+│   └── logs/           # Debugging journal, waveform images and logs of test runs
+├── requirements.txt    # Python dependencies for the sweep
+├── LICENSE
 └── README.md           # You are here
 ```
 
@@ -115,19 +135,24 @@ The hand-drawn diagram below depicts the micro-architectural implementation of t
 Refer to the linked files for a deep dive into the project.
 ### Design
 - [Theory](./docs/theory.md)
+- [Datapath Overview](./docs/datapath.md)
 - [Nomenclature](./docs/nomenclature.md)
 - [Exponent Comparator](./docs/exponent_comparator.md)
 - [Mantissa Alignment](./docs/mantissa_alignment.md)
 - [Mantissa Adder Operation Logic and Output Sign](./docs/manop_outsign.md)
 - [Leading Zero Detector](./docs/leading_zero_detector.md)
-<!-- - [Normalization](./docs/normalization.md) -->
+- [Normalization](./docs/normalization.md)
 - [Rounding](./docs/rounding.md)
+- [Special Operands](./docs/special_op.md)
+- [Utility Blocks](./docs/utils.md)
 
 ### Validation
 - [FP32 Golden Model in C](./docs/real2hex.md)
 - [GMP Golden Model](./docs/gmp_golden_sweep.md)
+- [Debugging Journal](./docs/logs/running_doc.md)
 ## Results
-Refer
+Refer to the `gmpsweep` log files in `docs/logs/` for the complete logged data.
+
 | Precision | $le$ | $lm$ | $N_{samples}$ | $N_{fail}$ | Accuracy | Execution Time |
 | --- | --- | --- | --- | --- | --- | --- | 
 | fp32 | 8 | 23 | 200000 | 0 | 100% | 35m 29s |

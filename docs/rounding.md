@@ -1,5 +1,5 @@
 # Rounding
-**File(s)**: [`resm_round`][resm_round], `fpadd.v`
+**File(s)**: [`resm_round`][resm_round], [`fpadd.v`][fpadd]
 ## Purpose
 - To round the unrounded result mantissa `resm_bround` (mantissa + 3 rounding suffix bits) down to an `lm+1`-bit mantissa, using **round-to-nearest-even**.
 - To detect the carry-out produced when the rounding increment overflows an all-ones mantissa, and re-normalize the mantissa by a 1-bit right-shift when this happens.
@@ -52,7 +52,7 @@ mux #(.W(lm+1), .N(2)) round_resm_mux (
 ```
 - When `round_cout = 0`, `resm_around` is passed through unchanged — the rounding increment fit within the existing mantissa width.
 - When `round_cout = 1`, the mux instead selects `{round_cout, resm_around[lm:2], resm_around[1]|resm_around[0]}`: the mantissa is shifted right by 1, and the carry-out itself becomes the new implicit leading bit. The two bits shifted out are OR-merged into the new LSB for sticky-preservation consistency, though in practice they are always `0` here — an all-ones mantissa rounding up produces exact zeros below the carry, so no precision is actually lost.
-- `c[lm-1:0] = resm[lm-1:0]` — the final `lm` stored mantissa bits are read off this corrected result, with the implicit leading bit (`resm[lm]`) dropped as usual.
+- `res_man = resm[lm-1:0]` (masked to zero on overflow to infinity) — the final `lm` stored mantissa bits are read off this corrected result, with the implicit leading bit (`resm[lm]`) dropped as usual.
 
 ### Exponent Adjustment for Rounding Overflow
 - Since a rounding overflow effectively multiplies the mantissa's scale by 2 (the same effect as a 1-bit right-shift during renormalization), the result exponent must be incremented in lock-step:
@@ -75,12 +75,14 @@ assign resm_isSubnormal = ~round_cout & ~resm[lm];
 - Sub-normal input operands have their extracted exponents pre-incremented by 1 during subnormal adjustment (`ae_inc_sbnrm`/`be_inc_sbnrm` in `fpadd.v`), so the internal exponent datapath can treat them uniformly with normalized operands (an internal exponent of $1$ stands in for the true sub-normal exponent field of $0$). This means that whenever the true result stays sub-normal, `rese_around` still carries that stray `+1` and reads as $0\ldots01$ rather than the correct stored field of all-zeros.
 - The final exponent field masks this off:
 ```verilog
-assign c[lm+le-1:lm] = {rese_around[le-1:1], rese_around[0]&~resm_isSubnormal};
+assign res_exp = {rese_around[le-1:1], rese_around[0]&~resm_isSubnormal};
 ```
+- `res_exp` is the main datapath's result exponent. It still passes through the overflow-to-infinity check and the special-operand override before reaching `c` (see [Special Operands](./special_op.md#output-assembly)).
 - Forcing bit 0 to `0` when `resm_isSubnormal` is sufficient to correct `rese_around` back to an all-zero stored exponent, because the stray adjustment only ever shows up in that LSB for this range of results — not a general-purpose subtraction. This is flagged directly in `fpadd.v` as a known simplification (*"may not be most optimal logic, can substitute for round_cout and resm[lm] directly if needed"*), kept here for documentation completeness rather than as a claim of optimality.
 
 ## Architectural Diagram
 Refer to the *Round-Off*, *RS-1* (right-shift-by-1) and the bottom-most exponent `INC`/masking blocks of the [microarchitectural diagram](../README.md#architecture), which correspond respectively to `resm_round`, the overflow-correcting `round_resm_mux`, and the `ince_round`/`resm_isSubnormal` exponent-field logic described above.
 
-[resm_round]: ../src/datapath/resm_round.v
-[inc]: ../src/utils/inc.v
+[resm_round]: ../rtl/datapath/resm_round.v
+[inc]: ../rtl/utils/inc.v
+[fpadd]: ../rtl/fpadd.v
