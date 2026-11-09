@@ -1,0 +1,6 @@
+gmp_golden_sweep: lm=23 le=8
+mode: sampled (200000 vectors, seed=0)
+vectors run: 200000
+failures: 0
+execution time: 44m 50s
+------------------------------------------------------------

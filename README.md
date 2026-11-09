@@ -155,11 +155,11 @@ Refer to the `gmpsweep` log files in `docs/logs/` for the complete logged data.
 
 | Precision | $le$ | $lm$ | $N_{samples}$ | $N_{fail}$ | Accuracy | Execution Time |
 | --- | --- | --- | --- | --- | --- | --- | 
-| fp32 | 8 | 23 | 200000 | 0 | 100% | 35m 29s |
-| bf16 | 8 | 7 | 200000 | 0 | 100% | 3m 30s |
-| E4M3 | 4 | 3 | 131072 | 0 | 100% | 42s 926ms |
-| E5M2 | 5 | 2 | 131072 | 0 | 100% | 31s 225ms |
-| E4M4 | 4 | 4 | 524288 | 0 | 100% | 3m 00s |
+| fp32 | 8 | 23 | 200000 | 0 | 100% | 44m 50s |
+| bf16 | 8 | 7 | 200000 | 0 | 100% | 4m 09s |
+| E4M3 | 4 | 3 | 131072 | 0 | 100% | 1m 03s |
+| E5M2 | 5 | 2 | 131072 | 0 | 100% | 51s 046ms |
+| E4M4 | 4 | 4 | 524288 | 0 | 100% | 4m 13s |
 
 ## RoadMap
 
