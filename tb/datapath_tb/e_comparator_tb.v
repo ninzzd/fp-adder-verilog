@@ -1,7 +1,7 @@
 `timescale 1 ns / 1 ps
 /*
 To run:
-iverilog -o e_comparator_tb.vvp tb/datapath_tb/e_comparator_tb.v src/datapath/e_comparator.v src/utils/*.v
+iverilog -o e_comparator_tb.vvp tb/datapath_tb/e_comparator_tb.v rtl/datapath/e_comparator.v rtl/utils/*.v
 vvp e_comparator_tb.vvp
 */
 module e_comparator_tb;

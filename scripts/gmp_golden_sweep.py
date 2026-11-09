@@ -14,12 +14,12 @@ golden vectors are meaningless.
 
 It drives the *actual* tb/fpadd_tb.v testbench (which instantiates the
 `fpadd` DUT directly) via iverilog/vvp as a subprocess, overriding its lm/le
-parameters at compile time with `-P`. Nothing under tb/ or src/ is modified.
+parameters at compile time with `-P`. Nothing under tb/ or rtl/ is modified.
 
 Usage:
-    python3 tb/gmp_golden_sweep.py --lm 3 --le 4                 # exhaustive
-    python3 tb/gmp_golden_sweep.py --lm 23 --le 8 --sample 200000 # fp32, sampled
-    python3 tb/gmp_golden_sweep.py --lm 2 --le 3 --selftest       # sanity check only
+    python3 scripts/gmp_golden_sweep.py --lm 3 --le 4                 # exhaustive
+    python3 scripts/gmp_golden_sweep.py --lm 23 --le 8 --sample 200000 # fp32, sampled
+    python3 scripts/gmp_golden_sweep.py --lm 2 --le 3 --selftest       # sanity check only
 
 Vector count for a full sweep of (a, b) over all 2**(2*(lm+le+1)) combinations,
 times 2 for op in {0,1}. Exhaustive sweeps are only tractable for small custom
@@ -41,7 +41,7 @@ import gmpy2
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 TB_FILE = REPO_ROOT / "tb" / "fpadd_tb.v"
-SRC_GLOBS = ["src/*.v", "src/utils/*.v", "src/datapath/*.v"]
+SRC_GLOBS = ["rtl/*.v", "rtl/utils/*.v", "rtl/datapath/*.v"]
 LOG_DIR = REPO_ROOT / "docs" / "logs"
 
 

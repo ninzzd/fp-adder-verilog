@@ -1,6 +1,6 @@
 /*
 To run:
-iverilog -o inc_tb.vvp tb/utils_tb/inc_tb.v src/utils/inc.v
+iverilog -o inc_tb.vvp tb/utils_tb/inc_tb.v rtl/utils/inc.v
 */
 `timescale 1 ns / 1 ps
 module inc_tb;

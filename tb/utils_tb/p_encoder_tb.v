@@ -1,6 +1,6 @@
 /*
 To run: 
-iverilog -o p_encoder_tb.vvp tb/utils_tb/p_encoder_tb.v src/utils/p_encoder.v
+iverilog -o p_encoder_tb.vvp tb/utils_tb/p_encoder_tb.v rtl/utils/p_encoder.v
 vvp p_encoder_tb.vvp
 */
 module p_encoder_tb;

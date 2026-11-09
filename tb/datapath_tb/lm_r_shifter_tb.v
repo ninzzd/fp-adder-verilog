@@ -1,6 +1,6 @@
 /*
 To run:
-iverilog -o lm_r_shifter_tb.vvp tb/datapath_tb/lm_r_shifter_tb.v src/datapath/lm_r_shifter.v src/utils/*.v
+iverilog -o lm_r_shifter_tb.vvp tb/datapath_tb/lm_r_shifter_tb.v rtl/datapath/lm_r_shifter.v rtl/utils/*.v
 vvp lm_r_shifter_tb.vvp
 */
 `timescale 1ns / 1ps

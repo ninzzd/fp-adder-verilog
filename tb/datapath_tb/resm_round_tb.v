@@ -1,6 +1,6 @@
 /*
 To run:
-iverilog -o resm_round_tb.vvp tb/datapath_tb/resm_round_tb.v src/datapath/resm_round.v src/utils/*.v
+iverilog -o resm_round_tb.vvp tb/datapath_tb/resm_round_tb.v rtl/datapath/resm_round.v rtl/utils/*.v
 vvp resm_round_tb.vvp
 */
 `timescale 1 ns / 1 ps

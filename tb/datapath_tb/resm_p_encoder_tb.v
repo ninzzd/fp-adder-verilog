@@ -1,6 +1,6 @@
 /*
 To run:
-iverilog -o resm_p_encoder_tb.vvp tb/datapath_tb/resm_p_encoder_tb.v src/datapath/resm_p_encoder.v src/utils/*.v
+iverilog -o resm_p_encoder_tb.vvp tb/datapath_tb/resm_p_encoder_tb.v rtl/datapath/resm_p_encoder.v rtl/utils/*.v
 vvp resm_p_encoder_tb.vvp
 */
 `timescale 1ns / 1ps
